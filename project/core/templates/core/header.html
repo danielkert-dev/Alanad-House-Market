@@ -1,0 +1,85 @@
+{% load static i18n %}
+
+<header class="p-2 bg-secondary text-white">
+    <div class="d-flex flex-wrap justify-content-center align-items-center w-100">
+
+        <a href="{% url 'core:index' %}" class="h4 col-xl my-auto my-2 title text-white">{% trans 'Title of the page' %}</a>
+        
+            <!-- Links -->
+            <div class="d-flex col-sm-auto justify-content-end align-items-center" style="max-width: fit-content;">
+                    <!-- If not logged in, login button-->
+                    {% if request.user.is_authenticated %}
+                        
+                        {% if request.path != '/profile/' %} <!-- Add this line -->
+                            <a href="{% url 'account_email' %}" class="btn btn-primary btn-sm mx-1 my-1">{{ request.user.username|truncatechars:14 }}</a>
+                        {% endif %}                            
+                        <!-- Nav burger-->
+                        <a class="btn  btn-primary btn-sm mx-1 my-1" data-toggle="collapse" href="#collapseNav" role="button" aria-expanded="false" aria-controls="collapseNav">
+                            &#9776;
+                        </a>
+
+                        <a href="{% url 'account_logout' %}" class="small text-muted mx-1" title="{% trans 'Click to logout!' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-power" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                <path d="M7 6a7.75 7.75 0 1 0 10 0" />
+                                <path d="M12 4l0 8" />
+                              </svg>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm mx-2 my-1">{% trans 'Login' %}</a>
+                        <a href="{% url 'account_signup' %}" class="btn btn-primary  btn-sm mx-2 my-1">{% trans 'Signup' %}</a>
+                    {% endif %}
+
+                    <a onclick="toggleTheme()" class="small text-muted mx-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun-high" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" />
+                            <path d="M6.343 17.657l-1.414 1.414" />
+                            <path d="M6.343 6.343l-1.414 -1.414" />
+                            <path d="M17.657 6.343l1.414 -1.414" />
+                            <path d="M17.657 17.657l1.414 1.414" />
+                            <path d="M4 12h-2" />
+                            <path d="M12 4v-2" />
+                            <path d="M20 12h2" />
+                            <path d="M12 20v2" />
+                          </svg>
+                    </a>
+
+                    {% get_current_language as LANGUAGE_CODE %}
+                    <div class="language-selector">
+                        <img src="{% static 'flags/' %}{{ LANGUAGE_CODE }}.svg" class="language-icon rounded img-fluid h-100 ml-2" alt="{{ LANGUAGE_CODE }}" width="40" height="30">
+                        <form id="language-form" action="{% url 'set_language' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ redirect_to }}">
+                            <select class="mx-1 text-center" name="language" id="language-select">
+                                {% get_available_languages as LANGUAGES %}
+                                {% get_language_info_list for LANGUAGES as languages %}
+                                {% for language in languages %}
+                                <option class="bg-dark text-light" value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>{% trans language.code %}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    
+                    
+                    <script>
+                        document.getElementById('language-select').addEventListener('change', function() {
+                            document.getElementById('language-form').submit();
+                        });
+                    </script>
+                    
+                      
+            </div>
+
+        </div>
+
+    {% if request.user.is_authenticated %}
+    <div class="collapse" id="collapseNav">
+        <div class="d-flex col-sm-auto justify-content-center align-items-center">
+            <a href="" class="text-white p-2">{% trans 'Home' %}</a>
+            <a href="" class="text-white p-2">{% trans 'About' %}</a>
+            <a href="" class="text-white p-2">{% trans 'Contact' %}</a>
+        </div>
+    </div>
+    {% endif %}
+</header>

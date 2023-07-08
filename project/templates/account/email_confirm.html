@@ -1,0 +1,41 @@
+{% extends "core/base.html" %}
+{% load account i18n %}
+
+{% block head_title %}{% trans 'Confirm E-mail Address' %}{% endblock %}
+
+{% block content %}
+
+{% for message in messages %}
+    <div class="alert {{ message.tags }} alert-dismissible shadow bg-warning fade show rounded m-2" role="alert">
+        <button type="button" class="close small" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message | safe }}
+    </div>
+{% endfor %}
+
+<div class="container">
+    <div class="card mt-5 text-dark">
+        <div class="card-header">
+            {% trans 'Confirm E-mail Address' %}
+        </div>
+        <div class="card-body">
+            {% if confirmation %}
+                {% user_display confirmation.email_address.user as user_display %}
+                {% if can_confirm %}
+                    <p>{% trans 'Please confirm that' %} <a href="mailto:{{ confirmation.email_address.email }}">{{ confirmation.email_address.email }}</a> {% trans 'is an e-mail address for user' %} {{ user_display }}.</p>
+                    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                        {% csrf_token %}
+                        <button type="submit" class="primaryAction btn btn-primary btn-sm">{% trans 'Confirm' %}</button>
+                    </form>
+                {% else %}
+                    <p>{% trans 'Unable to confirm' %} {{ confirmation.email_address.email }} {% trans 'because it is already confirmed by a different account.' %}</p>
+                {% endif %}
+            {% else %}
+                {% url 'account_email' as email_url %}
+                <p>{% trans 'This e-mail confirmation link expired or is invalid. Please' %} <a href="{{ email_url }}">{% trans 'issue a new e-mail confirmation request' %}</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -29,6 +29,7 @@ urlpatterns = [
     path('accounts/password/reset/', PasswordResetView.as_view(), name='password_reset'),
 
     path("", include("core.urls")),
+    path("", include("house_maklar.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # for url patterns domain/language/uri/

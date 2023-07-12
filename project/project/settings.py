@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django.contrib.humanize',
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -49,6 +51,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
 
     'core',
+
+    'house_maklar',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% load i18n humanize %}
+{% block title %}{% trans 'Welcome!' %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    {% for house in houses %}
+        <div class="card bg-dark p-2 my-2 rounded shadow text-white">
+            <a href="{{ house.link }}"> <h3>{{ house.name }}</h3></a>
+            {% if house.price == "Anbud" %}
+            <p>Price: {{ house.price}}</p>
+            {% else %}
+            <p>Price: {{ house.price|intcomma }} €</p>
+            {% endif %}
+            <p>Address: {{ house.address }}</p>
+            <img src="https://www.maklarhuset.ax{{ house.img }}" alt="" class="img-thumbnail" loading="lazy"/>
+            <hr class="bg-light"/>
+            {{ house.description|safe }}
+            <!-- Display other fields as desired -->
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

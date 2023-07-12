@@ -1,0 +1,119 @@
+:root {
+    --first-color: #1e1e1e;
+    --second-color: #262626;
+    --third-color: #363636;
+    --icon-color: #A4A4A4;
+    --text-color: #DADADA;
+  
+    --blue-lightest: #D5E9F7;
+    --blue-lighter: #AED4F3;
+    --blue-light: #87BEEF;
+    --blue-medium: #5AA8E9;
+    --blue-dark: #3392DD;
+    --blue-darker: #1F6EBB;
+    --blue-darkest: #115499;
+    --blue-deepest: #0A4077;
+    --blue-blackest: #052855;
+  
+    }
+  
+  /* General */
+  
+  body {
+      font-family: 'Inter', sans-serif !important;
+    }
+  
+    a {
+      text-decoration: none; /* no underline */
+    }
+  
+    a:hover {
+      text-decoration: none;
+    }
+  
+  /* Theme */
+  
+  /* Dark Theme */
+  .dark-theme {
+    --first-color: #1e1e1e;
+    color: #FFFFFF;
+    background-color: var(--first-color);
+  }
+  
+  /* Light Theme */
+  .light-theme {
+    --first-color: #ffffff;
+    color: #292b2c;
+    background-color: var(--first-color);
+  }
+
+  /* Crispy */
+  .asteriskField {
+    display: none;
+}
+  
+  
+  /* Background */
+  
+  .bg-primary {
+    background-color: var(--first-color) !important;
+  }
+  
+  .bg-secondary {
+    background-color: var(--second-color) !important;
+  }
+  
+  /* Card */
+  
+  .card {
+    background: hsla(0, 0%, 100%, 1);
+    backdrop-filter: blur(30px);
+  }
+  
+  /* Title */
+  .title {
+    text-align: center; /* Center align by default */
+  }
+  
+  @media (min-width: 1200px) {
+    .title {
+      float: left; /* Float left when the webpage has sufficient width */
+      text-align: left; /* Reset text alignment for float left */
+    }
+  }
+  
+  
+  /* Buttons */
+  
+  .btn-primary {
+    color: #fff;
+    background-color: var(--blue-darkest);
+    border-color: var(--blue-darkest);
+  }
+  
+  .btn-primary:hover {
+    color: #fff;
+    background-color: var(--blue-deepest);
+    border-color: var(--blue-deepest);
+  }
+  
+
+  .language-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.language-icon {
+    position: absolute;
+    top: 50%;
+    left: -.15rem;
+    transform: translateY(-50%);
+    z-index: 1;
+    pointer-events: none;
+    object-fit: cover;
+}
+
+#language-select {
+    opacity: 0;
+    margin-top: .2rem;
+  }

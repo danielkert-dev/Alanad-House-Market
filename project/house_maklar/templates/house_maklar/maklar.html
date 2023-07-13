@@ -6,20 +6,32 @@
 
 <div class="container">
     {% for house in houses %}
-        <div class="card bg-dark p-2 my-2 rounded shadow text-white">
-            <a href="{{ house.link }}"> <h3>{{ house.name }}</h3></a>
+      <div class="card bg-dark p-2 my-2 rounded shadow text-white">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="m-2">
+            <p>{{ forloop.counter }}</p>
+            <a href="{{ house.link }}"><h3>{{ house.name }}</h3></a>
             {% if house.price == "Anbud" %}
-            <p>Price: {{ house.price}}</p>
+              <p>Price: {{ house.price}}</p>
             {% else %}
-            <p>Price: {{ house.price|intcomma }} €</p>
+              <p>Price: {{ house.price|intcomma }} €</p>
             {% endif %}
             <p>Address: {{ house.address }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
             <img src="https://www.maklarhuset.ax{{ house.img }}" alt="" class="img-thumbnail" loading="lazy"/>
-            <hr class="bg-light"/>
-            {{ house.description|safe }}
-            <!-- Display other fields as desired -->
+          </div>
         </div>
+        <button class="btn btn-primary mt-3 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#description{{ forloop.counter }}" aria-expanded="false" aria-controls="description{{ forloop.counter }}">
+          Toggle Description
+        </button>
+        <div class="collapse" id="description{{ forloop.counter }}">
+          {{ house.description|safe }}
+        </div>
+        <!-- Display other fields as desired -->
+      </div>
     {% endfor %}
-</div>
-
+  </div>
 {% endblock %}

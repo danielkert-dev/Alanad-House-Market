@@ -1,12 +1,39 @@
 {% load static i18n %}
 
+<style>
+
+    #title-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    #title {
+        width: fit-content;
+    }
+
+    .user-dropdown .dropdown-menu {
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: 100% !important;
+      }
+
+      .dropdown-item:hover {
+        background-color: #1D2124;
+        border-radius: .2rem;
+      }
+
+</style>
+
 <header class="p-2 bg-secondary text-white">
     <div class="d-flex flex-wrap justify-content-center align-items-center w-100">
 
-        <a href="{% url 'core:index' %}" class="h4 col-xl my-auto my-2 title text-white">{% trans 'Title of the page' %}</a>
-        
+        <div id="title-container" class="w-100">
+        <a href="{% url 'core:index' %}" id="title" class="h4 my-auto my-2 title text-white text-center">{% trans 'Åland House Market' %}</a>
+        </div>
             <!-- Links -->
-            <div class="d-flex col-sm-auto justify-content-end align-items-center" style="max-width: fit-content;">
+            <div class="d-flex justify-content-end align-items-center my-auto" style="max-width: fit-content;">
                     <!-- If not logged in, login button-->
                     {% if request.user.is_authenticated %}
                         
@@ -47,10 +74,12 @@
 
                     {% get_current_language as LANGUAGE_CODE %}
                     <div class="language-selector">
-                        <img src="{% static 'flags/' %}{{ LANGUAGE_CODE }}.svg" class="language-icon rounded img-fluid h-100 ml-2" alt="{{ LANGUAGE_CODE }}" width="40" height="30">
+                        <img src="{% static 'flags/' %}{{ LANGUAGE_CODE }}.svg" class="language-icon rounded img-fluid h-100 ml-2 user-select-none" alt="{{ LANGUAGE_CODE }}" width="40" height="30">
                         <form id="language-form" action="{% url 'set_language' %}" method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ redirect_to }}">
+                            
+                            
                             <select class="mx-1 text-center" name="language" id="language-select">
                                 {% get_available_languages as LANGUAGES %}
                                 {% get_language_info_list for LANGUAGES as languages %}
@@ -58,6 +87,8 @@
                                 <option class="bg-dark text-light" value="{{ language.code }}" {% if language.code == LANGUAGE_CODE %} selected {% endif %}>{% trans language.code %}</option>
                                 {% endfor %}
                             </select>
+
+                            
                         </form>
                     </div>
                     
@@ -76,9 +107,32 @@
     {% if request.user.is_authenticated %}
     <div class="collapse" id="collapseNav">
         <div class="d-flex col-sm-auto justify-content-center align-items-center">
-            <a href="" class="text-white p-2">{% trans 'Home' %}</a>
-            <a href="" class="text-white p-2">{% trans 'About' %}</a>
-            <a href="" class="text-white p-2">{% trans 'Contact' %}</a>
+
+
+            <div class="dropdown">
+                <button class="btn btn-dark btn-sm mx-1 my-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {% trans 'Markets' %}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right bg-dark mt-1" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item text-light" href="{% url 'pages:maklar' %}">Maklar</a>
+                  <a class="dropdown-item text-light" href="{% url 'pages:fk' %}">Fk</a>
+                  <a class="dropdown-item text-light" href="#">Lyyski</a>
+                </div>
+              </div>
+
+              
+            <div class="dropdown">
+                <button class="btn btn-dark btn-sm mx-1 my-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {% trans 'Tools' %}
+                </button>
+                <div class="dropdown-menu dropdown-menu-left bg-dark mt-1" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item text-light" href="#">{% trans 'Analytics' %}</a>
+                  <a class="dropdown-item text-light" href="#">{% trans 'Form' %}</a>
+                  <a class="dropdown-item text-light" href="#"> {% trans 'History' %}</a>
+                </div>
+              </div>
+
+            <a href="" class="p-2 btn-sm text-muted ">{% trans 'Contact' %}</a>
         </div>
     </div>
     {% endif %}

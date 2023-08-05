@@ -4,6 +4,15 @@
 
 {% block content %}
 
+{% for message in messages %}
+    <div class="alert {{ message.tags }} alert-dismissible shadow bg-warning text-dark fade show rounded m-2" role="alert">
+        <button type="button" class="close small" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{ message | safe }}
+    </div>
+{% endfor %}
+
 <style>
     .pagination.pagination-dark .page-link {
       background-color: #343a40;
@@ -47,6 +56,48 @@
           /* Example: Center the content */
 
       }
+
+      
+          /* Add this custom CSS */
+    .row.flex {
+      display: flex;
+      flex-wrap: wrap;
+      
+  }
+
+  .col-md-6.flex {
+      display: flex;
+      flex-direction: column;
+  }
+
+  .card.flex {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+  }
+
+   /* Add this custom CSS */
+   .card-body.flex {
+      flex-grow: 1;
+  }
+
+  .toggle-button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: auto; /* This will push the button to the bottom */
+
+  }
+
+  .modal-body::-webkit-scrollbar {
+      display: none;
+    }
+    
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .modal-body {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
   </style>
 
 <div class="container">
@@ -79,41 +130,56 @@
         </nav>
       </div>
 
-    {% for house in page_obj %}
-      <div class="card bg-dark p-2 my-2 rounded shadow text-white">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="m-2">
-              <a href="{{ house.link }}"><h3>{{ house.name }}</h3></a>
-              {% if house.price == "Anbud" %}
-                <p>Price: {{ house.price}}</p>
-              {% else %}
-                <p>Price: {{ house.price|intcomma }} €</p>
-              {% endif %}
-              <p>Address: {{ house.address }}</p>
-            </div>
-          </div>
-          <div class="col-md-6">
+      <div class="row flex">
+        {% for house in page_obj %}
+            <div class="col-md-6 flex">
+                <div class="card bg-dark p-2 my-2 rounded shadow text-white flex">
+                    <div class="row h-100">
+                        <div class="col-xl-6">
+                            <div class="m-2">
+                              <a href="{{ house.link }}"><h3>{{ house.name }}</h3></a>
+                              {% if house.price == "Anbud" %}
+                                <p>Price: {{ house.price}}</p>
+                              {% else %}
+                                <p>Price: {{ house.price|intcomma }} €</p>
+                              {% endif %}
+                              <p>Address: {{ house.address }}</p>
+                            </div>
+                    </div>
+                    <div class="col-xl-6">
             {% if house.vr_img == "No vr image"%}
-            <img src="https://www.maklarhuset.ax{{ house.img }}" alt="" class="img-thumbnail" loading="lazy"/>
+            <img src="https://www.maklarhuset.ax{{ house.img }}" alt="" class="mt-1 rounded shadow" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
             {% else %}
-            <div class="embed-responsive embed-responsive-16by9 img-thumbnail">
+            <div class="embed-responsive embed-responsive-16by9 mt-1 rounded shadow" style="width: 100%; height: 100%; object-fit: cover;">
               {{ house.vr_img|safe }}
             </div>
             {% endif %}
           </div>
         </div>
-        <button class="btn btn-primary mt-3 mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#description{{ forloop.counter }}" aria-expanded="false" aria-controls="description{{ forloop.counter }}">
-          Toggle Description
-        </button>
-        <div class="collapse" id="description{{ forloop.counter }}">
-            <div class="m-3">
-          {{ house.description|safe }}
+                    <!-- Add this -->
+                    <button type="button" class="btn btn-primary mt-3 mb-2" data-bs-toggle="modal" data-bs-target="#descriptionModal{{ forloop.counter }}">
+                      Toggle Description
+                  </button>
+                </div>
             </div>
-        </div>
-        <!-- Display other fields as desired -->
-      </div>
+       
+            <!-- Add this -->
+            <div class="modal fade" id="descriptionModal{{ forloop.counter }}" tabindex="-1" aria-labelledby="descriptionModalLabel{{ forloop.counter }}" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable">
+                  <div class="modal-content bg-dark">
+                      <div class="modal-body">
+                          {{ house.description|safe }}
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          {% if forloop.counter|divisibleby:2 and not forloop.last %}
+              </div><div class="row flex">
+          {% endif %}
+
     {% endfor %}
+  </div>
   
     <div class="paginator-container my-3">
         <nav aria-label="Page navigation">

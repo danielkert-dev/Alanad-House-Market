@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class HouseMaklarConfig(AppConfig):
+class PagesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'house_maklar'
+    name = 'pages'

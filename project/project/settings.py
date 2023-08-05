@@ -51,8 +51,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
 
     'core',
-
-    'house_maklar',
+    'pages',
 ]
 
 MIDDLEWARE = [

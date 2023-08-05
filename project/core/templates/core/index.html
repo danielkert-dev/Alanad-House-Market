@@ -6,7 +6,7 @@
 {% block content %}
 
 {% for message in messages %}
-    <div class="alert {{ message.tags }} alert-dismissible shadow bg-warning fade show rounded m-2" role="alert">
+    <div class="alert {{ message.tags }} alert-dismissible shadow bg-warning text-dark fade show rounded m-2" role="alert">
         <button type="button" class="close small" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -15,10 +15,21 @@
 {% endfor %}
 
 {% if request.user.is_authenticated %}
-{% trans 'Your username' %}
 
+
+
+{% trans 'Your username' %}
 {{ request.user.username|truncatechars:14 }}
+
+
+
+
+{% else %}
+<div class="text-center mt-4">
+    <h1 class="mb-5">{% trans 'Welcome!' %}</h1>
+    <p>{% trans 'You should login or signup!' %}</p>
+    <p class="text-muted">{% trans 'If you want access contact danielkertdev@gmail.com.' %}</p>
+</div>
 {% endif %}
-<p>HELLO</p>
 
 {% endblock %}

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-z77i^0efqt-a7=ijtq6o8bx4ugs#k-va#$)fq3j%a8xp#)5dhc
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ['https://alanad-house-market-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://aland-house-market-production.up.railway.app']
 
 
 # Application definition

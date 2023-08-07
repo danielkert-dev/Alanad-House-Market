@@ -7,4 +7,5 @@ app_name = 'pages'
 urlpatterns = [
     path("maklar/", views.maklar, name="maklar"),
     path("fk/", views.fk, name="fk"),
+    path("lyyski/", views.lyyski, name="lyyski"),
 ]

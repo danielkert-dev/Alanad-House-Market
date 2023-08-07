@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load i18n humanize custom_filters %}
+{% load i18n humanize %}
 {% block title %}{% trans 'Welcome!' %}{% endblock %}
 
 {% block content %}
@@ -141,8 +141,7 @@
                                 {% if house.price == "Anbud" %}
                                     <p>Price: {{ house.price}}</p>
                                 {% else %}
-                                    <p>Price: {{ house.price|intcomma }} 
-                                    </p>
+                                    <p>Price: {{ house.price|intcomma }}</p>
                                 {% endif %}
                                 <p>Address: {{ house.address }}</p>
                             </div>
@@ -164,8 +163,8 @@
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content bg-dark">
                         <div class="modal-body">
-                          <button type="button" class="btn btn-sm btn-primary mb-3 w-100" data-bs-dismiss="modal" aria-label="Close">&times;</button> 
-                            {{ house.description|remove_text:'<button class="button singel-object__show-more">'|remove_text:"Visa hela beskrivningen"|safe }}
+                            <button type="button" class="btn btn-sm btn-primary mb-3 w-100" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            {{ house.description|safe }}
                         </div>
                     </div>
                 </div>

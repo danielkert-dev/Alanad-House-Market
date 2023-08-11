@@ -1,4 +1,4 @@
-{% load static i18n %}
+{% load static i18n  %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,8 +25,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
 
-    <!-- JS -->
-    <script src="{% static 'js/colorMode.js' %}"></script>
+
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
@@ -34,7 +33,7 @@
 
 
 </head>
-<body class="">
+<body class=" bg-dark text-light">
     {% include "core/header.html"%}
         {% block content %}
         {% endblock %}

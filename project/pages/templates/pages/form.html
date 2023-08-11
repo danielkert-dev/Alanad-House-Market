@@ -1,0 +1,29 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans 'House Form' %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 bg-secondary rounded shadow p-3">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="font-weight-bold">{{ field.label_tag }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in field.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

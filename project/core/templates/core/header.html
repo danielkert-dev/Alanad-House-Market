@@ -57,20 +57,8 @@
                         <a href="{% url 'account_signup' %}" class="btn btn-primary  btn-sm mx-2 my-1">{% trans 'Signup' %}</a>
                     {% endif %}
 
-                    <a onclick="toggleTheme()" class="small text-muted mx-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-sun-high" width="16" height="16" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                            <path d="M14.828 14.828a4 4 0 1 0 -5.656 -5.656a4 4 0 0 0 5.656 5.656z" />
-                            <path d="M6.343 17.657l-1.414 1.414" />
-                            <path d="M6.343 6.343l-1.414 -1.414" />
-                            <path d="M17.657 6.343l1.414 -1.414" />
-                            <path d="M17.657 17.657l1.414 1.414" />
-                            <path d="M4 12h-2" />
-                            <path d="M12 4v-2" />
-                            <path d="M20 12h2" />
-                            <path d="M12 20v2" />
-                          </svg>
-                    </a>
+                    <div id="google_translate_element"></div>
+
 
                     {% get_current_language as LANGUAGE_CODE %}
                     <div class="language-selector">
@@ -126,8 +114,8 @@
                   {% trans 'Tools' %}
                 </button>
                 <div class="dropdown-menu dropdown-menu-left bg-dark mt-1" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item text-light" href="#">{% trans 'Analytics' %}</a>
-                  <a class="dropdown-item text-light" href="#">{% trans 'Form' %}</a>
+                  <a class="dropdown-item text-light" href="{% url 'pages:analytics' %}">{% trans 'Analytics' %}</a>
+                  <a class="dropdown-item text-light" href="{% url 'pages:form' %}">{% trans 'Form' %}</a>
                   <a class="dropdown-item text-light" href="#"> {% trans 'History' %}</a>
                 </div>
               </div>

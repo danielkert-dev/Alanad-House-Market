@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-{% load i18n %}
+{% load i18n humanize custom_filters %}
 
 {% block title %}{% trans 'Welcome!' %}{% endblock %}
 
@@ -17,16 +17,49 @@
 {% if request.user.is_authenticated %}
 
 
-
-{% trans 'Your username' %}
+<div class="text-center mt-3 text-muted mb-4">
+{% trans 'Your username' %} :
 {{ request.user.username|truncatechars:14 }}
+</div>
 
-
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card bg-secondary p-3">
+                <div class="card-head">
+                    <h3 > Average price </h3>
+                </div>
+                <div class="card-body">
+                {% for average_price in average_prices %}
+                    <div>
+                        <p>Date: {{ average_price.date | date:"d-m-Y" }}</p>
+                        <p>Fk: {{ average_price.individual_average_prices.0 | floatformat:2 | intcomma }} €</p>
+                        <p>Maklar: {{ average_price.individual_average_prices.1 | floatformat:2 | intcomma }} €</p>
+                        <p>Lyyski: {{ average_price.individual_average_prices.2 | floatformat:2 | intcomma }} €</p>
+                        <p>{% trans 'Overall' %}: {{ average_price.overall_average_price | floatformat:2 | intcomma }} €</p>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create other cards here using similar markup -->
+        <div class="col-md-6">
+            <div class="card bg-secondary p-3">
+                <!-- Card content -->
+            </div>
+        </div>
+    </div>
+</div>
 
 
 {% else %}
+
+
 <div class="text-center mt-4">
-    <h1 class="mb-5">{% trans 'Welcome!' %}</h1>
+    <h1 class="mb-2">{% trans 'Welcome!' %}</h1>
+    <a href="{% url 'account_login' %}" class="btn btn-primary btn-sm mx-2 my-1 mb-3">{% trans 'Login' %}</a>
+    <a href="{% url 'account_signup' %}" class="btn btn-primary  btn-sm mx-2 my-1 mb-3">{% trans 'Signup' %}</a>
     <p>{% trans 'You should login or signup!' %}</p>
     <p class="text-muted">{% trans 'If you want access contact danielkertdev@gmail.com.' %}</p>
 </div>

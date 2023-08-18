@@ -5,27 +5,16 @@
 {% block content %}
 <div class="container">
     <h1 class="mt-5 text-center">Property Average Prices</h1>
-    <table class="table-dark table-striped mt-3 text-white table rounded shadow">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Fk avg</th>
-                <th>Maklar avg</th>
-                <th>Lyyski avg</th>
-                <th>{% trans 'Overall' %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for average_price in average_prices %}
-            <tr>
-                <td>{{ average_price.date | date:"d-m-Y" }}</td>
-                <td>{{ average_price.individual_average_prices.0 | floatformat:2 | intcomma }} €</td> <!-- Accessing the first value of the array -->
-                <td>{{ average_price.individual_average_prices.1 | floatformat:2 | intcomma }} €</td> <!-- Accessing the second value of the array -->
-                <td>{{ average_price.individual_average_prices.2 | floatformat:2 | intcomma }} €</td> <!-- Accessing the third value of the array -->
-                <td>{{ average_price.overall_average_price | floatformat:2 | intcomma }} €</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card bg-dark">
+        {% for average_price in average_prices %}
+            <div>
+                <p>Date: {{ average_price.date | date:"d-m-Y" }}</p>
+                <p>Fk: {{ average_price.individual_average_prices.0 | floatformat:2 | intcomma }} €</p> <!-- Accessing the first value of the array -->
+                <p>Maklar: {{ average_price.individual_average_prices.1 | floatformat:2 | intcomma }} €</p> <!-- Accessing the second value of the array -->
+                <p>Lyyski: {{ average_price.individual_average_prices.2 | floatformat:2 | intcomma }} €</p> <!-- Accessing the third value of the array -->
+                <p>{% trans 'Overall' %}: {{ average_price.overall_average_price | floatformat:2 | intcomma }} €</p>
+            </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

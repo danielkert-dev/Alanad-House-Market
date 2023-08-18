@@ -4,13 +4,22 @@
 
 {% block content %}
 <div class="container mt-5 bg-secondary rounded shadow p-3">
-    <div class="row justify-content-center">
+
+    <h1 class="text-center">
+        Form
+    </h1>
+
+    <div class="text-center text-muted">
+        {% trans 'Write property details from Facebook, word of mouth, or your own.' %}
+    </div>
+
+    <div class="row justify-content-center my-3">
         <div class="col-md-6">
             <form method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
-                        <label for="{{ field.id_for_label }}" class="font-weight-bold">{{ field.label_tag }}</label>
+                        <label for="{{ field.id_for_label }}" class="font-weight-bold">{% trans field.label %}</label>
                         {{ field }}
                         {% if field.errors %}
                             <div class="invalid-feedback">
@@ -21,7 +30,7 @@
                         {% endif %}
                     </div>
                 {% endfor %}
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
             </form>
         </div>
     </div>

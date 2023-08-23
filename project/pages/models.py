@@ -5,7 +5,7 @@ from django.contrib.postgres.fields import ArrayField
 class MaklerHouse(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    price = models.CharField(max_length=255)
+    price = models.IntegerField()
     address = models.CharField(max_length=255, unique=True)
     img = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
@@ -27,7 +27,7 @@ class MaklerHouse(models.Model):
 class FkHouse(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    price = models.CharField(max_length=255)
+    price = models.IntegerField()
     address = models.CharField(max_length=255, unique=True)
     img = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
@@ -49,7 +49,7 @@ class FkHouse(models.Model):
 class LyyskiHouse(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    price = models.CharField(max_length=255)
+    price = models.IntegerField()
     address = models.CharField(max_length=255, unique=True)
     img = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
@@ -71,7 +71,7 @@ class LyyskiHouse(models.Model):
 class FormHouse(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
-    price = models.CharField(max_length=255)
+    price = models.IntegerField()
     address = models.CharField(max_length=255, unique=True)
     img = models.CharField(max_length=255)
     link = models.CharField(max_length=255)

@@ -1,20 +1,90 @@
 {% extends 'core/base.html' %}
 {% load i18n humanize custom_filters %}
+
 {% block title %}{% trans 'Property Type Average Prices' %}{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="mt-5 text-center">Property Average Prices</h1>
-    <div class="card bg-dark">
-        {% for average_price in average_prices %}
-            <div>
-                <p>Date: {{ average_price.date | date:"d-m-Y" }}</p>
-                <p>Fk: {{ average_price.individual_average_prices.0 | floatformat:2 | intcomma }} €</p> <!-- Accessing the first value of the array -->
-                <p>Maklar: {{ average_price.individual_average_prices.1 | floatformat:2 | intcomma }} €</p> <!-- Accessing the second value of the array -->
-                <p>Lyyski: {{ average_price.individual_average_prices.2 | floatformat:2 | intcomma }} €</p> <!-- Accessing the third value of the array -->
-                <p>{% trans 'Overall' %}: {{ average_price.overall_average_price | floatformat:2 | intcomma }} €</p>
-            </div>
-        {% endfor %}
+    <h1 class="my-3 text-center">Analytics</h1>
+    
+    <div class="row">
+
+        <div class="col-md-6">
+            {% if avg_price %}
+                <div class="card bg-secondary text-white mb-4">
+                    <div class="card-head">
+                        <h4 class="px-3 pt-3">Property Average Prices</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted"> {{ avg_price.date | date:"d-m-Y" }}</p>
+                        <ul class="list-group">
+                            <li class="list-group-item bg-dark">Maklar: {{ avg_price.average_price_maklar | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">FK: {{ avg_price.average_price_fk | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">Lyyski: {{ avg_price.average_price_lyyski | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">Overall: {{ avg_price.overall_average_price | floatformat:0 | intcomma }} €</li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <p>No documents found in the collection.</p>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            {% if avg_floor_price %}
+                <div class="card bg-secondary text-white mb-4">
+                    <div class="card-head">
+                        <h4 class="px-3 pt-3">Property Average Floor Prices</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted"> {{ avg_floor_price.date | date:"d-m-Y" }}</p>
+                        <ul class="list-group">
+                            <li class="list-group-item bg-dark">Maklar: {{ avg_floor_price.average_cost_per_area_maklar | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">FK: {{ avg_floor_price.average_cost_per_area_fk | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">Lyyski: {{ avg_floor_price.average_cost_per_area_lyyski | floatformat:0 | intcomma }} €</li>
+                            <li class="list-group-item bg-dark">Overall: {{ avg_floor_price.overall_average_cost_per_area| floatformat:0 | intcomma }} €</li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <p>No documents found in the collection.</p>
+            {% endif %}
+        </div>
+
+        <div class="col">
+            {% if avg_municipality_price %}
+                <div class="card bg-secondary text-white mb-4">
+                    <div class="card-head">
+                        <h4 class="px-3 pt-3">Property Average Prices by Municipality</h4>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted"> {{ avg_municipality_price.date | date:"d-m-Y" }}</p>
+                        <div class="row">
+                            {% for municipality_type, municipality_prices in avg_municipality_price.items %}
+                                {% if not forloop.first %} {# Skip the first iteration #}
+                                    <div class="col-md-6">
+                                        <h5 class="my-4">{{ municipality_type|title|replace_underscores }}</h5>
+                                        <ul class="list-group">
+                                            {% for municipality, avg_price in municipality_prices.items %}
+                                                <li class="list-group-item bg-dark">
+                                                    {{ municipality|title }}: {{ avg_price|floatformat:0|intcomma }} €
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p>No documents found in the collection.</p>
+            {% endif %}
+        </div>
+        
+        
+        
+        
     </div>
 </div>
 {% endblock %}

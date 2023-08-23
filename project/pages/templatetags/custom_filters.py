@@ -13,3 +13,8 @@ def remove_text(value, text_to_remove):
     pattern = re.escape(text_to_remove)
     value = re.sub(pattern, '', value)
     return value
+
+
+@register.filter(name='replace_underscores')
+def replace_underscores(value):
+    return value.replace('_', ' ')

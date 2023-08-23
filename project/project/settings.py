@@ -104,6 +104,15 @@ DATABASES = {
     }
 }
 
+MONGO_URL = config('MONGO_URL')
+MONGO_DB = {
+    'URL': MONGO_URL,
+    'HOST': config('MONGOHOST'),
+    'PORT': int(config('MONGOPORT')),
+    'USERNAME': config('MONGOUSER'),
+    'PASSWORD': config('MONGOPASSWORD'),
+}
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 

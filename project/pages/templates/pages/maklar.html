@@ -148,7 +148,7 @@
                     </div>
                     <div class="col-xl-6">
             {% if house.vr_img == "No vr image"%}
-            <img src="https://www.maklarhuset.ax{{ house.img }}" alt="" class="mt-1 rounded shadow" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
+            <img src="{{ house.img }}" alt="" class="mt-1 rounded shadow" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy"/>
             {% else %}
             <div class="embed-responsive embed-responsive-16by9 mt-1 rounded shadow" style="width: 100%; height: 100%; object-fit: cover;">
               {{ house.vr_img|safe }}

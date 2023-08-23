@@ -1,11 +1,13 @@
 from django import forms
 from .models import FormHouse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+
 
 class FormHouseForm(forms.ModelForm):
     class Meta:
         model = FormHouse
         exclude = ['id']
-
         widgets = {
             'date_added': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'name': forms.TextInput(attrs={'class': 'form-control'}),

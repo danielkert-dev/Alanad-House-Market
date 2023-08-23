@@ -13,3 +13,7 @@ def remove_text(value, text_to_remove):
     pattern = re.escape(text_to_remove)
     value = re.sub(pattern, '', value)
     return value
+
+@register.filter
+def slice_range(value, start):
+    return value[start:start + 10]

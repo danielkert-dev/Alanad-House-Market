@@ -16,45 +16,120 @@
 
 {% if request.user.is_authenticated %}
 
-
+<div class="bg-secondary text-center fs-6 text-muted p-1">
+    | Overall Average Price: {{ avg_price.overall_average_price | floatformat:0 | intcomma }} € |
+    Overall Average Cost per area: {{ avg_floor_price.overall_average_cost_per_area| floatformat:0 | intcomma }} € |
+</div>
 <div class="text-center mt-3 text-muted mb-4">
-{% trans 'Your username' %} :
-{{ request.user.username|truncatechars:14 }}
+{% trans 'Data date'%}
+{{ avg_price.date | date:"d-m-Y" }}
 </div>
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card bg-secondary p-3">
-                <div class="card-head">
-                    <h3 > Average price </h3>
-                </div>
-                <div class="card-body">
-                {% for average_price in average_prices %}
-                    <div>
-                        <p>Date: {{ average_price.date | date:"d-m-Y" }}</p>
-                        <p>Fk: {{ average_price.individual_average_prices.0 | floatformat:2 | intcomma }} €</p>
-                        <p>Maklar: {{ average_price.individual_average_prices.1 | floatformat:2 | intcomma }} €</p>
-                        <p>Lyyski: {{ average_price.individual_average_prices.2 | floatformat:2 | intcomma }} €</p>
-                        <p>{% trans 'Overall' %}: {{ average_price.overall_average_price | floatformat:2 | intcomma }} €</p>
-                    </div>
-                {% endfor %}
-                </div>
-            </div>
+    <h2>Search Houses</h2>
+    <form method="get" action="{% url 'core:index' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="query">Search Query:</label>
+            <input type="text" name="query" id="query" class="form-control" value="{{ houses.query }}">
         </div>
-        
-        <!-- Create other cards here using similar markup -->
+        <div class="form-group">
+            <label for="max_price">Max Price:</label>
+            <input type="number" name="max_price" id="max_price" class="form-control" value="{{ houses.max_price }}">
+        </div>
+        <div class="form-group">
+            <label for="min_price">Min Price:</label>
+            <input type="number" name="min_price" id="min_price" class="form-control" value="{{ houses.min_price }}">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="container">
+    <h2>Search Results</h2>
+    <div class="row mb-3">
         <div class="col-md-6">
-            <div class="card bg-secondary p-3">
-                <!-- Card content -->
-            </div>
+            <p>Sort by:</p>
+            <a href="?sort=highest_price{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" class="btn btn-link">Highest Price</a>
+            <a href="?sort=lowest_price{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" class="btn btn-link">Lowest Price</a>
         </div>
     </div>
+    
+    <div class="row">
+        {% for market in houses.page_obj %}
+            <div class="col-md-4">
+                <div class="card mb-4 bg-secondary">
+                    <img src="{{ market.img }}" class="card-img-top" alt="{{ market.name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ market.name }}</h5>
+                        <p class="card-text">Price: {{ market.price }}</p>
+                        <a href="{{ market.link }}" class="btn btn-primary">View Market</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if houses.page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ houses.page_obj.previous_page_number }}{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            
+            <div class="pagination justify-content-center">
+                <div class="input-group mb-3">
+                    <input type="number" class="form-control" id="goto-page" min="1" max="{{ houses.page_obj.paginator.num_pages }}" value="{{ houses.page_obj.number }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" id="goto-button">Go</button>
+                    </div>
+                </div>
+            </div>
+        
+            <script>
+                document.getElementById("goto-button").addEventListener("click", function() {
+                    const inputElement = document.getElementById("goto-page");
+                    const selectedPage = parseInt(inputElement.value);
+                    const maxPage = {{ houses.page_obj.paginator.num_pages }};
+                    
+                    if (selectedPage < 1) {
+                        inputElement.value = 1;
+                    } else if (selectedPage > maxPage) {
+                        inputElement.value = maxPage;
+                    }
+                    
+                    window.location.href = `?page=${inputElement.value}{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}`;
+                });
+            </script>
+            
+            {% if houses.page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ houses.page_obj.next_page_number }}{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ houses.page_obj.paginator.num_pages }}{% if houses.query %}&query={{ houses.query }}{% endif %}{% if houses.min_price %}&min_price={{ houses.min_price }}{% endif %}{% if houses.max_price %}&max_price={{ houses.max_price }}{% endif %}{% if houses.sort %}&sort={{ houses.sort }}{% endif %}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 </div>
 
 
-{% else %}
 
+{% else %}
 
 <div class="text-center mt-4">
     <h1 class="mb-2">{% trans 'Welcome!' %}</h1>

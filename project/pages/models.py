@@ -102,3 +102,20 @@ class AveragePrice(models.Model):
 
     class Meta:
         db_table = 'average_prices'  # Set the table name for the AveragePrice model
+
+
+class MapData(models.Model):
+    id = models.AutoField(primary_key=True)
+    address = models.TextField()
+    municipality = models.TextField()
+    unique_identifier = models.TextField()  # Add the unique identifier field
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+
+    def __str__(self):
+        return self.address
+
+    class Meta:
+        db_table = 'map_data'
+        managed = False  # Tell Django to not manage table creation
+

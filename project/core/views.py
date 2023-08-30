@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from pages.utils.mongodb import get_mongodb_connection
 from datetime import datetime
-from pages.models import MaklerHouse, FkHouse, LyyskiHouse
+from pages.models import MaklerHouse, FkHouse, LyyskiHouse, MapData
 from django.db.models import Q
 import re
+from urllib.parse import urlparse
 
 def index(request):
 
@@ -13,11 +14,30 @@ def index(request):
     min_price = request.GET.get('min_price')
     page_number = request.GET.get('page', 1)  # Get the page number from the request
     sort_option = request.GET.get('sort')
+    selected_municipality = request.GET.get('municipality')
+    selected_type = request.GET.get('type')
+
 
     # Create individual querysets for each house type
     makler_markets = MaklerHouse.objects.order_by('-date_added')
     fk_markets = FkHouse.objects.order_by('-date_added')
     lyyski_markets = LyyskiHouse.objects.order_by('-date_added')
+
+    # Get unique municipalities from all house types
+    unique_municipalities = set()
+    unique_municipalities.update(makler_markets.values_list('municipality', flat=True))
+    unique_municipalities.update(fk_markets.values_list('municipality', flat=True))
+    unique_municipalities.update(lyyski_markets.values_list('municipality', flat=True))
+
+    # Get unique types from all house types
+    unique_types = set()
+    unique_types.update(makler_markets.values_list('type', flat=True))
+    unique_types.update(fk_markets.values_list('type', flat=True))
+    unique_types.update(lyyski_markets.values_list('type', flat=True))
+
+    # Filter out None values and sort
+    municipalities = sorted(filter(None, unique_municipalities))
+    types = sorted(filter(None, unique_types))
 
     # Apply query and price filters to each queryset
     if query:
@@ -25,7 +45,7 @@ def index(request):
         query_filter = Q()
 
         for keyword in keywords:
-            query_filter |= Q(name__icontains=keyword)
+            query_filter |= Q(name__icontains=keyword) | Q( municipality__icontains=keyword) | Q( address__icontains=keyword ) | Q( type__icontains=keyword)
 
         makler_markets = makler_markets.filter(query_filter)
         fk_markets = fk_markets.filter(query_filter)
@@ -42,6 +62,20 @@ def index(request):
         makler_markets = makler_markets.filter(price__gte=min_price_int)
         fk_markets = fk_markets.filter(price__gte=min_price_int)
         lyyski_markets = lyyski_markets.filter(price__gte=min_price_int)
+
+    # Filter based on selected municipality
+    if selected_municipality:
+        makler_markets = makler_markets.filter(municipality=selected_municipality)
+        fk_markets = fk_markets.filter(municipality=selected_municipality)
+        lyyski_markets = lyyski_markets.filter(municipality=selected_municipality)
+
+    # Filter based on selected type
+    if selected_type:
+        makler_markets = makler_markets.filter(type=selected_type)
+        fk_markets = fk_markets.filter(type=selected_type)
+        lyyski_markets = lyyski_markets.filter(type=selected_type)
+
+
 
     # Combine querysets for pagination
     combined_markets = list(makler_markets) + list(fk_markets) + list(lyyski_markets)
@@ -62,9 +96,9 @@ def index(request):
         'max_price': max_price,
         'min_price': min_price,
         'page_obj': page_obj,
-    }
-
-
+        'municipality': request.GET.get('municipality'),  # Get the municipality from the request for select
+        'type': request.GET.get('type'),  # Get the type from the request for select
+    }  
 
  
 #! ANALYTICS DAta
@@ -108,10 +142,27 @@ def index(request):
     else:
         avg_floor_price_fields = None
 
+    #? Extra data
+
+    # Modify the extraction logic for market names and domains
+    for market in combined_markets:
+        parsed_url = urlparse(market.link)
+        domain_name = parsed_url.netloc.split(':')[0]  # Extract the domain name without port
+        market.domain_name = domain_name  # Store the extracted domain name
+
+    map_data = MapData.objects.all()
 
     context = { 'avg_price': avg_price_fields, 
                 'avg_floor_price': avg_floor_price_fields,  
-                'houses': houses,}
+                'houses': houses,
+                'combined_markets': combined_markets,
+                'municipalities': municipalities,  # Pass the municipalities to the template
+                'types': types,  # Pass the types to the template
+                'request': request,
+                'map_data': map_data
+                }
+    
 
 
     return render(request, 'core/index.html', context)
+

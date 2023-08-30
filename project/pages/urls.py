@@ -10,4 +10,5 @@ urlpatterns = [
     path("lyyski/", views.lyyski, name="lyyski"),
     path("analytics/", views.analytics, name="analytics"),
     path('form/', views.create_form_house, name='form'),
+    path('page/', views.page, name='page'),
 ]

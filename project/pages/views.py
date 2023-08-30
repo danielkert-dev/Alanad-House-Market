@@ -41,6 +41,31 @@ def lyyski(request):
 
     return render(request, 'pages/lyyski.html' , {'page_obj': page_obj})
 
+
+@login_required
+def page(request):
+    address = request.GET.get('address', 'default_value')
+    # You can perform any additional processing here
+
+    house = None
+    
+    for model in [MaklerHouse, LyyskiHouse, FkHouse]:
+        try:
+            house = model.objects.get(address__icontains=address)
+            break  # Break out of the loop as soon as a match is found
+        except model.DoesNotExist:
+            pass  # Move on to the next model
+    
+    context = {
+        'address': address,
+        'request': request,
+        'house': house,
+
+    }
+    
+    return render(request, 'pages/page.html', context)
+
+
 def create_form_house(request):
     if request.method == 'POST':
         form = FormHouseForm(request.POST)

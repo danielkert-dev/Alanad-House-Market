@@ -27,52 +27,6 @@
 
 {% if request.user.is_authenticated %}
 
-<button id="scrollToTopButton" class="btn btn-primary btn-fixed" onclick="scrollToTop()">Scroll To Top</button>
-<button id="scrollToBottomButton" class="btn btn-primary btn-fixed" onclick="scrollToBottom()">Scroll to Bottom</button>
-
-
-<script>
-    // Function to scroll to the top of the page
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Function to scroll to the bottom of the page
-    function scrollToBottom() {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-    }
-
-    // Show or hide the "Scroll To Top" button based on scroll position
-    window.addEventListener('scroll', function() {
-        var scrollToTopButton = document.getElementById('scrollToTopButton');
-        if (window.scrollY > 200) {
-            scrollToTopButton.style.display = 'block';
-        } else {
-            scrollToTopButton.style.display = 'none';
-        }
-    });
-
-    function handleScroll() {
-        var scrollToTopButton = document.getElementById('scrollToTopButton');
-        var scrollToBottomButton = document.getElementById('scrollToBottomButton');
-        
-        if (window.scrollY > 200) {
-            scrollToTopButton.style.display = 'block';
-        } else {
-            scrollToTopButton.style.display = 'none';
-        }
-        
-        if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-            scrollToBottomButton.style.display = 'none';
-        } else {
-            scrollToBottomButton.style.display = 'block';
-        }
-    }
-
-    // Call the handleScroll function on scroll
-    window.addEventListener('scroll', handleScroll);
-    
-</script>
 
 
 <div class="bg-secondary text-center fs-6 text-muted p-1">
@@ -149,7 +103,9 @@
 <div class="row my-2">
     <div class="col-md-6">
         <a class="btn-primary btn-sm" href="?{% if request.GET.query %}query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}&sort=highest_price" class="btn btn-link{% if houses.municipality %}&municipality={{ houses.municipality }}{% endif %}">Highest Price</a>
-        <a class="btn-primary btn-sm"href="?{% if request.GET.query %}query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}&sort=lowest_price" class="btn btn-link{% if houses.municipality %}&municipality={{ houses.municipality }}{% endif %}">Lowest Price</a>
+        <a class="btn-primary btn-sm" href="?{% if request.GET.query %}query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}&sort=lowest_price" class="btn btn-link{% if houses.municipality %}&municipality={{ houses.municipality }}{% endif %}">Lowest Price</a>
+                
+    
     </div>
 </div>
     </form>
@@ -157,12 +113,99 @@
 </div>
 </div>
 
+<div class="container mb-2" id="map-container">
+    <div id="map" style="height: 300px;" class="rounded"></div>
+</div>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([60.2400, 19.9500], 9);
+
+    document.getElementsByClassName('leaflet-control-attribution')[0].style.display = 'none';
+
+    // Add a lighter gray-tone tile layer (CartoDB Positron)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: false // Disable the attribution control
+    }).addTo(map);
+
+    var baseMaps = {
+        "Map": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'),
+        "Satellite": L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3']
+    }),
+    "Terrain": L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+        maxZoom: 20,
+        subdomains:['mt0','mt1','mt2','mt3']
+}),
+        "Light": L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'),
+        "Dark": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'),
+
+    };
+    
+    L.control.layers(baseMaps).addTo(map);
+
+    // Create a marker cluster group
+    var markers = L.markerClusterGroup();
+
+    // Loop through the map_data and add markers to the cluster group
+    {% for data in map_data %}
+        var marker = L.marker([{{ data.latitude }}, {{ data.longitude }}]);
+        marker.bindPopup("<b>{{ data.address }}</b><br><a href='{{ data.unique_identifier }}'>View Market</a>");
+        markers.addLayer(marker);
+    {% endfor %}
+
+    // Add the cluster group to the map
+    map.addLayer(markers);
+</script>
+
+
 <div class="container" id="searchResultsContainer">
     <h2 class="text-center m-3">Search Results</h2>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if houses.page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if request.GET.query %}query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}&page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?{% if request.GET.query %}query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}&page={{ houses.page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+            
+            {% for page_num in houses.page_range %}
+                <li class="page-item{% if page_num == houses.page_obj.number %} active{% endif %}">
+                    <a class="page-link" href="?page={{ page_num }}{% if houses.request.GET %}{{ houses.request.GET.urlencode }}{% endif %}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% endfor %}
+
+
+            {% if houses.page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ houses.page_obj.next_page_number }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ houses.page_obj.paginator.num_pages }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    
     
     <div class="row">
         {% for market in houses.page_obj %}
-            <div class="col-md-4">
+            <div class="col-lg-4">
                 <div class="card mb-4 bg-secondary">
                     <div class="position-relative">
                         {% if market.domain_name == "fk.ax" %}
@@ -181,10 +224,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ market.name }}</h5>
                         <p class="card-text">Price: {{ market.price }}</p>
-                        <p class="card-text">Domain Name: {{ market.domain_name }}</p>
-                        <p>Link: {{ market.link }}</p>
-                        <a href="{{ market.link }}" class="btn btn-primary">View Market</a>
-                        <a href="/page/?address={{ market.address }}">More</a>
+                        <a href="/page/?address={{ market.address }}" class="btn btn-primary">More</a>
                     </div>
                 </div>
             </div>
@@ -205,43 +245,34 @@
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-        {% endif %}
+            {% endif %}
             
-        {% if houses.page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ houses.page_obj.next_page_number }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        <li class="page-item">
-            <a class="page-link" href="?page={{ houses.page_obj.paginator.num_pages }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Last">
-                <span aria-hidden="true">&raquo;&raquo;</span>
-            </a>
-        </li>
-    {% endif %}
-    
+            {% for page_num in houses.page_range %}
+                <li class="page-item{% if page_num == houses.page_obj.number %} active{% endif %}">
+                    <a class="page-link" href="?page={{ page_num }}{% if houses.request.GET %}{{ houses.request.GET.urlencode }}{% endif %}">
+                        {{ page_num }}
+                    </a>
+                </li>
+            {% endfor %}
+
+
+            {% if houses.page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ houses.page_obj.next_page_number }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ houses.page_obj.paginator.num_pages }}{% if request.GET %}{% if request.GET.query %}&query={{ request.GET.query }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.municipality %}&municipality={{ request.GET.municipality }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% endif %}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
-
-    <div class="container" id="map-container">
-        <div id="map" style="height: 500px;" class="rounded"></div>
-    </div>
     
-<script>
-    // Initialize the map
-    var map = L.map('map').setView([60.2400, 19.9500], 9); 
-
-    // Add a tile layer (you can use any other tile layer as well)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    }).addTo(map);
-
-    // Loop through the map_data and add markers
-    {% for data in map_data %}
-        var marker = L.marker([{{ data.latitude }}, {{ data.longitude }}]).addTo(map);
-        marker.bindPopup("<b>{{ data.address }}</b><br><a href='{{ data.unique_identifier }}'>View Market</a>");
-    {% endfor %}
-</script>
-
+    
+    
 
 </div>
 

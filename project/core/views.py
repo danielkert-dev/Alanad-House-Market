@@ -89,6 +89,11 @@ def index(request):
     per_page = 10  # Number of items per page
     paginator = Paginator(combined_markets, per_page)
     page_obj = paginator.get_page(page_number)
+
+    # Calculate the range of page numbers to display in the paginator
+    current_page = page_obj.number
+    page_range = range(max(1, current_page - 5), min(current_page + 6, paginator.num_pages + 1))
+
     
 
     houses = {
@@ -98,6 +103,8 @@ def index(request):
         'page_obj': page_obj,
         'municipality': request.GET.get('municipality'),  # Get the municipality from the request for select
         'type': request.GET.get('type'),  # Get the type from the request for select
+        'page_range': page_range,  # Add the calculated page range to the houses dictionary
+
     }  
 
  
@@ -150,18 +157,26 @@ def index(request):
         domain_name = parsed_url.netloc.split(':')[0]  # Extract the domain name without port
         market.domain_name = domain_name  # Store the extracted domain name
 
-    map_data = MapData.objects.all()
 
-    context = { 'avg_price': avg_price_fields, 
-                'avg_floor_price': avg_floor_price_fields,  
-                'houses': houses,
-                'combined_markets': combined_markets,
-                'municipalities': municipalities,  # Pass the municipalities to the template
-                'types': types,  # Pass the types to the template
-                'request': request,
-                'map_data': map_data
-                }
-    
+    # Create a list of links from the combined_markets queryset
+    combined_links = [market.link for market in combined_markets]
+
+    # Filter map_data to include only those with links present in the combined_links list
+    filtered_map_data = MapData.objects.filter(unique_identifier__in=combined_links)
+
+    # Filter out data points with no address from filtered_map_data
+    filtered_map_data = filtered_map_data.exclude(address='No address')
+
+    context = {
+        'avg_price': avg_price_fields, 
+        'avg_floor_price': avg_floor_price_fields,  
+        'houses': houses,
+        'combined_markets': combined_markets,
+        'municipalities': municipalities,  # Pass the municipalities to the template
+        'types': types,  # Pass the types to the template
+        'request': request,
+        'map_data': filtered_map_data
+    }
 
 
     return render(request, 'core/index.html', context)

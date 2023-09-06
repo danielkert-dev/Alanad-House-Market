@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator
 from pages.utils.mongodb import get_mongodb_connection
 from datetime import datetime
-from pages.models import MaklerHouse, FkHouse, LyyskiHouse, MapData
+from pages.models import MaklerHouse, FkHouse, LyyskiHouse, AktiaHouse, MapData
 from django.db.models import Q
 import re
 from urllib.parse import urlparse
@@ -22,18 +22,21 @@ def index(request):
     makler_markets = MaklerHouse.objects.order_by('-date_added')
     fk_markets = FkHouse.objects.order_by('-date_added')
     lyyski_markets = LyyskiHouse.objects.order_by('-date_added')
+    aktia_markets = AktiaHouse.objects.order_by('-date_added')
 
     # Get unique municipalities from all house types
     unique_municipalities = set()
     unique_municipalities.update(makler_markets.values_list('municipality', flat=True))
     unique_municipalities.update(fk_markets.values_list('municipality', flat=True))
     unique_municipalities.update(lyyski_markets.values_list('municipality', flat=True))
+    unique_municipalities.update(aktia_markets.values_list('municipality', flat=True))
 
     # Get unique types from all house types
     unique_types = set()
     unique_types.update(makler_markets.values_list('type', flat=True))
     unique_types.update(fk_markets.values_list('type', flat=True))
     unique_types.update(lyyski_markets.values_list('type', flat=True))
+    unique_types.update(aktia_markets.values_list('type', flat=True))
 
     # Filter out None values and sort
     municipalities = sorted(filter(None, unique_municipalities))
@@ -50,35 +53,40 @@ def index(request):
         makler_markets = makler_markets.filter(query_filter)
         fk_markets = fk_markets.filter(query_filter)
         lyyski_markets = lyyski_markets.filter(query_filter)
+        aktia_markets = aktia_markets.filter(query_filter)
 
     if max_price:
         max_price_int = int(max_price)
         makler_markets = makler_markets.filter(price__lte=max_price_int)
         fk_markets = fk_markets.filter(price__lte=max_price_int)
         lyyski_markets = lyyski_markets.filter(price__lte=max_price_int)
+        aktia_markets = aktia_markets.filter(price__lte=max_price_int)
 
     if min_price:
         min_price_int = int(min_price)
         makler_markets = makler_markets.filter(price__gte=min_price_int)
         fk_markets = fk_markets.filter(price__gte=min_price_int)
         lyyski_markets = lyyski_markets.filter(price__gte=min_price_int)
+        aktia_markets = aktia_markets.filter(price__gte=min_price_int)
 
     # Filter based on selected municipality
     if selected_municipality:
         makler_markets = makler_markets.filter(municipality=selected_municipality)
         fk_markets = fk_markets.filter(municipality=selected_municipality)
         lyyski_markets = lyyski_markets.filter(municipality=selected_municipality)
+        aktia_markets = aktia_markets.filter(municipality=selected_municipality)
 
     # Filter based on selected type
     if selected_type:
         makler_markets = makler_markets.filter(type=selected_type)
         fk_markets = fk_markets.filter(type=selected_type)
         lyyski_markets = lyyski_markets.filter(type=selected_type)
+        aktia_markets = aktia_markets.filter(type=selected_type)
 
 
 
     # Combine querysets for pagination
-    combined_markets = list(makler_markets) + list(fk_markets) + list(lyyski_markets)
+    combined_markets = list(makler_markets) + list(fk_markets) + list(lyyski_markets) + list(aktia_markets)
     
     if sort_option == 'highest_price':
         combined_markets.sort(key=lambda x: x.price if x.price is not None else float('-inf'), reverse=True)

@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from .models import MaklerHouse, LyyskiHouse, FkHouse
+from .models import MaklerHouse, LyyskiHouse, FkHouse, AktiaHouse
 
 from .forms import FormHouseForm
 from .utils.mongodb import get_mongodb_connection
@@ -41,6 +41,16 @@ def lyyski(request):
 
     return render(request, 'pages/lyyski.html' , {'page_obj': page_obj})
 
+@login_required
+def aktia(request):
+    houses = AktiaHouse.objects.all()
+
+    paginator = Paginator(houses, 10)  # Set the number of houses per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'pages/aktia.html' , {'page_obj': page_obj})
+
 
 @login_required
 def page(request):
@@ -49,7 +59,7 @@ def page(request):
 
     house = None
     
-    for model in [MaklerHouse, LyyskiHouse, FkHouse]:
+    for model in [MaklerHouse, LyyskiHouse, FkHouse, AktiaHouse]:
         try:
             house = model.objects.get(address__icontains=address)
             break  # Break out of the loop as soon as a match is found
